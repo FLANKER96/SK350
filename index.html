@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSFiddle 9m7q48ca</title>
+
+  <style>
+    
+  </style>
+
+  
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Emergencias</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        #quiz-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #correct-answer {
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #e9ecef;
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Procedimientos de Emergencia</h1>
+    <div id="quiz-container">
+        <p id="question"></p>
+        <textarea id="user-answer" rows="4" placeholder="Escribe tu respuesta aquí..."></textarea>
+        <button id="check-answer">Mostrar Respuesta</button>
+        <button id="next-question">Siguiente Pregunta</button>
+        <div id="correct-answer">
+            <h3>Respuesta Correcta:</h3>
+            <ul id="answer-list"></ul>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            const questions = [
+                { question: "ENGINE FIRE OR FAILURE IN FLIGHT", answer: ["Condition Lever: FUEL CUTOFF", "Prop Lever: FEATHER", "Firewall Fuel Valve: CLOSE", "Fire Extinguisher (if fire warning persists): ACTUATE"] },
+                { question: "ENGINE FIRE ON GROUND", answer: ["Condition Lever: FUEL CUTOFF", "Firewall Fuel Valve: CLOSE", "Starter Switch: STARTER ONLY", "Fire Extinguisher (if fire warning persists): ACTUATE"] },
+                { question: "EMERGENCY ENGINE SHUTDOWN ON THE GROUND", answer: ["Condition Levers: FUEL CUTOFF", "Prop Levers: FEATHER", "Firewall Fuel Valves: CLOSE", "Master Switch (gang bar): OFF", "Battery Bus: EMERG OFF", "ESIS Power: OFF"] },
+                { question: "ENGINE FAILURE DURING TAKEOFF (AT OR BELOW V1)—TAKEOFF ABORTED", answer: ["Power Levers: GROUND FINE", "Brakes: MAXIMUM", "(or as required to achieve stopping distance)"] },
+                { question: "ENGINE FAILURE DURING TAKEOFF (AT OR ABOVE V1)—TAKEOFF CONTINUED", answer: ["VR Speed: ROTATE TO APPROX 10° PITCH ATTITUDE", "Landing Gear (when positive climb established): UP", "Airspeed: MAINTAIN V2 TO 400 FT AGL", "Propeller (inoperative engine): VERIFY FEATHERED"] },
+                { question: "ENGINE FAILURE IN FLIGHT BELOW AIR MINIMUM CONTROL SPEED (VMCA)", answer: ["Power: REDUCE AS REQUIRED TO MAINTAIN CONTROL", "Nose: LOWER TO ACCELERATE ABOVE VMCA"] },
+                { question: "ELECTRICAL SMOKE OR FIRE", answer: ["Oxygen Mask(s): DON", "Mask Selector Switch: EMERG", "Mic Switch(es): OXY"] },
+                { question: "ENVIRONMENTAL SMOKE OR FUMES", answer: ["Oxygen Mask(s): DON", "Mask Selector Switch: EMERG", "Mic Switch(es): OXY"] },
+                { question: "AIRSTAIR DOOR/CARGO DOOR UNLOCKED", answer: ["All Occupants: SEATED WITH SEAT BELTS SECURELY FASTENED"] },
+                { question: "EMERGENCY DESCENT", answer: ["Power Levers: IDLE", "Prop Levers: FULL FORWARD", "Flaps (202 knots maximum): APPROACH", "Landing Gear (184 knots maximum): DOWN", "Airspeed: 184 KNOTS MAXIMUM"] },
+                { question: "GLIDE", answer: ["Landing Gear: UP", "Flaps: UP", "Prop Levers: FEATHERED", "Airspeed: 135 KNOTS"] },
+                { question: "DUAL GENERATOR FAILURE", answer: ["Instrument Emergency Lights: ON", "Generators: RESET, THEN ON", "If Neither Generator Will Reset: ECS Mode: OFF", "Cockpit/Cabin Blower: AUTO", "Non-essential Equipment: OFF"] },
+                { question: "USE OF OXYGEN (Crew)", answer: ["Oxygen Mask(s): DON", "Mic Switch(es): OXY"] },
+                { question: "PRESSURIZATION LOSS", answer: ["Oxygen Mask(s): DON", "Mic Switch(es): OXY", "Passenger Manual Drop Out: PULL ON", "Descend: AS REQUIRED"] },
+                { question: "HIGH DIFFERENTIAL PRESSURE", answer: ["Bleed Air Valves: ENVIR OFF", "Oxygen (crew and passengers): AS REQUIRED", "Descend: AS REQUIRED"] },
+                { question: "AUTODEPLOYMENT OXYGEN SYSTEM FAILURE", answer: ["Passenger Manual Drop Out: PULL ON"] },
+                { question: "BLEED AIR FAIL", answer: ["Bleed Air Valve (affected engine): PNEU & ENVIR OFF"] },
+                { question: "SPINS", answer: ["Control Column: FULL FORWARD, AILERONS NEUTRAL", "Full Rudder: OPPOSITE THE DIRECTION OF SPIN", "Power Levers: IDLE", "Rudder: NEUTRALIZE WHEN ROTATION STOPS", "Execute a smooth pullout"] },
+                { question: "UNSCHEDULED ELECTRIC PITCH TRIM ACTIVATION", answer: ["Airplane Attitude: MAINTAIN USING ELEVATOR CONTROL", "AP/Trim Disconnect: DEPRESS FULLY & HOLD"] },
+                { question: "UNSCHEDULED RUDDER BOOST ACTIVATION", answer: ["AP/Trim Disconnect: DEPRESS TO 1ST LEVEL AND HOLD", "Rudder Boost: OFF", "If Condition Persists: YD/AP DISC (on Flight Guidance Panel): PULL DOWN"] },
+                { question: "AUTOPILOT FAILURE", answer: ["Flight Controls: HOLD FIRMLY", "AP: DISENGAGE"] },
+                { question: "AUTOPILOT TRIM FAIL", answer: ["Flight Controls: HOLD FIRMLY", "AP: DISENGAGE"] },
+                { question: "AUTOPILOT AUTOMATIC DISENGAGEMENT", answer: ["Maintain Airplane Control", "AP/TRIM Disconnect: DEPRESS TO 1ST LEVEL TO CANCEL HORN"] },
+                { question: "ENHANCED GROUND PROXIMITY WARNING SYSTEM (EGPWS)", answer: ["Wings: LEVEL", "Power: MAX ALLOWABLE", "Pitch: INCREASE", "Gear and Flaps: UP"] },
+                { question: "TERRAIN AWARENESS AND WARNING SYSTEM PLUS (TAWS+)", answer: ["Autopilot: DISCONNECT", "Wings: LEVEL", "Power: MAX ALLOWABLE", "Pitch: INCREASE", "Gear and Flaps: UP"] }
+            ];
+            let shuffledQuestions = questions.sort(() => Math.random() - 0.5);
+            let currentIndex = 0;
+            function loadQuestion() {
+                $("#correct-answer").hide();
+                $("#user-answer").val("");
+                $("#question").text(shuffledQuestions[currentIndex].question);
+                $("#answer-list").empty();
+                shuffledQuestions[currentIndex].answer.forEach(item => {
+                    $("#answer-list").append(`<li>${item}</li>`);
+                });
+            }
+            $("#check-answer").click(() => $("#correct-answer").show());
+            $("#next-question").click(() => { currentIndex = (currentIndex + 1) % shuffledQuestions.length; loadQuestion(); });
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
+
+
+  <script>
+    
+  </script>
+</body>
+</html>
